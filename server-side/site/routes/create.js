@@ -2,7 +2,8 @@ var mongo = require('mongodb');
 var crypto = require('crypto');
 var emailjs = require('emailjs/email');
 var models = require('./studyModel.js');
-
+var redis = require('redis');
+var client = redis.createClient(6379, '127.0.0.1',{});
  
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -25,6 +26,14 @@ var emailServer  = emailjs.server.connect({
 });
 
 exports.createStudy = function(req, res) {
+
+    client.get('createFlag',function(err, reply){
+    if(reply == 'false')
+    {
+        res.send('Feature has not been set')
+    }
+    else
+    {
 
     var invitecode = req.body.invitecode; 
     var studyKind = req.body.studyKind;
@@ -66,6 +75,11 @@ exports.createStudy = function(req, res) {
 
         });
     });
+
+}
+console.log("Value of createFlag: " +reply);
+});
+
 };
 
 
